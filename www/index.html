@@ -1,0 +1,4083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AcadeMind · AI Study Dashboard</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#6e56cf" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AcadeMind" />
+  <link rel="apple-touch-icon" href="icons/icon-512.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ===== DARK THEME (default) ===== */
+    :root {
+      --bg: #0a0c12;
+      --bg-gradient: radial-gradient(circle at 10% 20%, #1a1f2e, #0a0c12 90%);
+      --surface: #141820;
+      --surface-gradient: linear-gradient(145deg, #1a1f2b, #121620);
+      --surface-light: #1e2432;
+      --surface-hover: #252c3d;
+      --border: rgba(110, 86, 207, 0.15);
+      --border-glow: rgba(110, 86, 207, 0.3);
+      --primary: #6e56cf;
+      --primary-light: #9f8aea;
+      --primary-soft: rgba(110, 86, 207, 0.1);
+      --secondary: #ffb347;
+      --secondary-light: #ffd966;
+      --secondary-soft: rgba(255, 179, 71, 0.1);
+      --accent: #4ec9b0;
+      --accent-light: #7fdbc7;
+      --accent-soft: rgba(78, 201, 176, 0.1);
+      --success: #4ade80;
+      --success-soft: rgba(74, 222, 128, 0.1);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.1);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.1);
+      --text: #f0f3fa;
+      --text-muted: #9ca3b0;
+      --text-dim: #6b7280;
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow-sm: 0 8px 20px -6px rgba(0, 0, 0, 0.6);
+      --shadow-md: 0 16px 30px -8px rgba(0, 0, 0, 0.8);
+      --shadow-lg: 0 30px 50px -12px rgba(0, 0, 0, 1);
+      --glass: rgba(20, 24, 32, 0.8);
+
+      /* Animated gradient card colors - dark */
+      --grad-c1: #1a1f2b;
+      --grad-c2: #121620;
+      --grad-c3: #1e2030;
+      --grad-c4: #16192a;
+
+      /* KPI card gradient accents */
+      --kpi-g1-a: rgba(110, 86, 207, 0.18);
+      --kpi-g1-b: rgba(78, 201, 176, 0.10);
+      --kpi-g2-a: rgba(255, 179, 71, 0.18);
+      --kpi-g2-b: rgba(110, 86, 207, 0.10);
+      --kpi-g3-a: rgba(74, 222, 128, 0.15);
+      --kpi-g3-b: rgba(78, 201, 176, 0.10);
+      --kpi-g4-a: rgba(248, 113, 113, 0.15);
+      --kpi-g4-b: rgba(251, 191, 36, 0.10);
+
+      --mode-icon: '☀️';
+      --transition-theme: background 0.4s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* ===== LIGHT THEME ===== */
+    html.light {
+      --bg: #f0f2f8;
+      --bg-gradient: radial-gradient(circle at 10% 20%, #e8ecf8, #f0f2f8 90%);
+      --surface: #ffffff;
+      --surface-gradient: linear-gradient(145deg, #ffffff, #f7f8fd);
+      --surface-light: #f0f2f8;
+      --surface-hover: #e6e9f4;
+      --border: rgba(110, 86, 207, 0.14);
+      --border-glow: rgba(110, 86, 207, 0.28);
+      --primary: #6e56cf;
+      --primary-light: #5a42b8;
+      --primary-soft: rgba(110, 86, 207, 0.09);
+      --secondary: #e8920d;
+      --secondary-light: #c97a00;
+      --secondary-soft: rgba(232, 146, 13, 0.1);
+      --accent: #0fa89a;
+      --accent-light: #0d9287;
+      --accent-soft: rgba(15, 168, 154, 0.1);
+      --success: #16a34a;
+      --success-soft: rgba(22, 163, 74, 0.1);
+      --warning: #d97706;
+      --warning-soft: rgba(217, 119, 6, 0.1);
+      --danger: #dc2626;
+      --danger-soft: rgba(220, 38, 38, 0.08);
+      --text: #1a1d2e;
+      --text-muted: #4b5270;
+      --text-dim: #8891aa;
+      --shadow-sm: 0 4px 16px -4px rgba(110, 86, 207, 0.12);
+      --shadow-md: 0 8px 28px -6px rgba(110, 86, 207, 0.16);
+      --shadow-lg: 0 20px 40px -10px rgba(110, 86, 207, 0.20);
+      --glass: rgba(255, 255, 255, 0.85);
+
+      /* Animated gradient card colors - light */
+      --grad-c1: #ffffff;
+      --grad-c2: #f7f8fd;
+      --grad-c3: #eef0fb;
+      --grad-c4: #f3f4fc;
+
+      /* KPI card gradient accents - light */
+      --kpi-g1-a: rgba(110, 86, 207, 0.10);
+      --kpi-g1-b: rgba(78, 201, 176, 0.06);
+      --kpi-g2-a: rgba(232, 146, 13, 0.12);
+      --kpi-g2-b: rgba(110, 86, 207, 0.06);
+      --kpi-g3-a: rgba(22, 163, 74, 0.10);
+      --kpi-g3-b: rgba(15, 168, 154, 0.06);
+      --kpi-g4-a: rgba(220, 38, 38, 0.10);
+      --kpi-g4-b: rgba(217, 119, 6, 0.06);
+
+      --mode-icon: '🌙';
+    }
+
+    /* ===== ANIMATED GRADIENT KEYFRAMES ===== */
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      25%  { background-position: 100% 0%; }
+      50%  { background-position: 100% 100%; }
+      75%  { background-position: 0% 100%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes kpiPulse1 {
+      0%, 100% { background-position: 0% 50%; }
+      50%       { background-position: 100% 50%; }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.35s ease, border-color 0.35s ease, color 0.25s ease, box-shadow 0.3s ease;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    /* Animated Background Mesh */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-image: 
+        radial-gradient(circle at 15% 30%, rgba(110, 86, 207, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 85% 70%, rgba(78, 201, 176, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255, 179, 71, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    html.light body::before {
+      background-image: 
+        radial-gradient(circle at 15% 30%, rgba(110, 86, 207, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 70%, rgba(78, 201, 176, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255, 179, 71, 0.06) 0%, transparent 50%);
+    }
+
+    /* Subtle Grid Overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: 
+        linear-gradient(rgba(110, 86, 207, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(110, 86, 207, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      width: 76px;
+      height: 38px;
+      border-radius: 40px;
+      border: 1px solid var(--border);
+      background: var(--surface-light);
+      cursor: pointer;
+      position: relative;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      gap: 0;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .theme-toggle-track {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
+      padding: 0 6px;
+      font-size: 13px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .theme-toggle-thumb {
+      position: absolute;
+      width: 32px;
+      height: 30px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      left: 3px;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 2px 8px rgba(110, 86, 207, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      pointer-events: none;
+    }
+
+    html.light .theme-toggle-thumb {
+      transform: translateX(38px);
+    }
+
+    /* Subject card gradient */
+    .subject-card {
+      background: linear-gradient(
+        145deg,
+        var(--grad-c1) 0%,
+        var(--grad-c3) 50%,
+        var(--grad-c2) 100%
+      );
+      background-size: 200% 200%;
+      animation: gradientShift 22s ease infinite;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--surface);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-light);
+    }
+
+    /* Setup Screen */
+    #setupScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      backdrop-filter: blur(20px);
+    }
+
+    .setup-wrap {
+      max-width: 480px;
+      width: 90%;
+      animation: slideUp 0.7s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .setup-brand {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .setup-icon {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 24px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      color: white;
+      box-shadow: 0 30px 50px -20px var(--primary);
+      animation: float 6s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .setup-brand h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 44px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .setup-brand p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .setup-card {
+      background: linear-gradient(145deg, var(--grad-c1), var(--grad-c2), var(--grad-c3), var(--grad-c4));
+      background-size: 200% 200%;
+      animation: gradientShift 20s ease infinite;
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 16px 18px;
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(110, 86, 207, 0.15);
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary), #8b6fd8);
+      border: none;
+      border-radius: var(--radius-md);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 16px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 30px -10px var(--primary);
+    }
+
+    /* Main App */
+    #mainApp {
+      display: none;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, var(--grad-c1), var(--grad-c2), var(--grad-c3));
+      background-size: 100% 200%;
+      animation: gradientShift 25s ease infinite;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 28px 20px;
+      backdrop-filter: blur(10px);
+      z-index: 999;
+    }
+
+    .sidebar-header {
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+    }
+
+    .brand-text h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .brand-text p {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: var(--primary-soft);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: white;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-info h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .user-info span {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .nav-section {
+      margin-bottom: 24px;
+    }
+
+    .nav-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      padding-left: 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      width: 100%;
+      border: none;
+      background: none;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 4px;
+      text-align: left;
+    }
+
+    .nav-item:hover {
+      background: var(--surface-light);
+      color: var(--primary-light);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--primary-soft), var(--secondary-soft));
+      color: var(--primary-light);
+      border-left: 3px solid var(--primary);
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .badge-ai {
+      margin-left: auto;
+      background: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .countdown-box {
+      background: var(--surface-light);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-top: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .countdown-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .cd-item {
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 8px 4px;
+    }
+
+    .cd-number {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+
+    .cd-label {
+      font-size: 8px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      margin-left: 280px;
+      padding: 32px;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius-lg);
+      padding: 16px 24px;
+      border: 1px solid var(--border);
+    }
+
+    .page-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .page-category {
+      padding: 4px 12px;
+      background: var(--primary-soft);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary-light);
+      border: 1px solid var(--border);
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--text), #ffffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    /* Panels */
+    .panel {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .grid-auto {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    /* ===== ANIMATED GRADIENT CARDS ===== */
+    .card {
+      background: linear-gradient(
+        135deg,
+        var(--grad-c1) 0%,
+        var(--grad-c2) 33%,
+        var(--grad-c3) 66%,
+        var(--grad-c1) 100%
+      );
+      background-size: 200% 200%;
+      animation: gradientShift 20s ease infinite;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid var(--border);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border-glow);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .card-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .card-badge {
+      padding: 4px 12px;
+      background: var(--primary-soft);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary-light);
+      border: 1px solid var(--border);
+    }
+
+    /* ===== ANIMATED KPI CARDS ===== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-item {
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      background-size: 200% 200%;
+      animation: kpiPulse1 18s ease infinite;
+    }
+
+    /* Each KPI gets its own unique gradient color accent */
+    .kpi-item:nth-child(4n+1) {
+      background: linear-gradient(135deg, var(--grad-c1), var(--kpi-g1-a), var(--grad-c2));
+      animation-delay: 0s;
+    }
+    .kpi-item:nth-child(4n+2) {
+      background: linear-gradient(135deg, var(--grad-c2), var(--kpi-g2-a), var(--grad-c3));
+      animation-delay: -3s;
+    }
+    .kpi-item:nth-child(4n+3) {
+      background: linear-gradient(135deg, var(--grad-c3), var(--kpi-g3-a), var(--grad-c1));
+      animation-delay: -6s;
+    }
+    .kpi-item:nth-child(4n+0) {
+      background: linear-gradient(135deg, var(--grad-c4), var(--kpi-g4-a), var(--grad-c2));
+      animation-delay: -9s;
+    }
+
+    .kpi-item::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      opacity: 0.08;
+      pointer-events: none;
+      transition: all 0.5s;
+    }
+
+    .kpi-item:nth-child(4n+1)::before { background: var(--primary); }
+    .kpi-item:nth-child(4n+2)::before { background: var(--secondary); }
+    .kpi-item:nth-child(4n+3)::before { background: var(--success); }
+    .kpi-item:nth-child(4n+0)::before { background: var(--danger); }
+
+    .kpi-item:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .kpi-item:hover::before {
+      opacity: 0.18;
+      width: 140px;
+      height: 140px;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kpi-trend {
+      font-size: 12px;
+      color: var(--text-dim);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Welcome Card */
+    .welcome-card {
+      background: linear-gradient(
+        135deg,
+        rgba(110, 86, 207, 0.20) 0%,
+        rgba(78, 201, 176, 0.18) 30%,
+        rgba(255, 179, 71, 0.14) 60%,
+        rgba(110, 86, 207, 0.20) 100%
+      ) !important;
+      background-size: 200% 200% !important;
+      animation: gradientShift 18s ease infinite !important;
+      border: 1px solid var(--border-glow) !important;
+    }
+
+    html.light .welcome-card {
+      background: linear-gradient(
+        135deg,
+        rgba(110, 86, 207, 0.12) 0%,
+        rgba(78, 201, 176, 0.10) 30%,
+        rgba(255, 179, 71, 0.10) 60%,
+        rgba(110, 86, 207, 0.12) 100%
+      ) !important;
+    }
+
+    .welcome-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .welcome-quote {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+
+    .welcome-date {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    /* Chart Containers */
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+
+    /* Alerts */
+    .alerts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .alert-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border-left: 4px solid;
+      background: var(--surface-light);
+    }
+
+    .alert-item.info { border-color: var(--primary); background: var(--primary-soft); }
+    .alert-item.success { border-color: var(--success); background: var(--success-soft); }
+    .alert-item.warning { border-color: var(--warning); background: var(--warning-soft); }
+    .alert-item.danger { border-color: var(--danger); background: var(--danger-soft); }
+
+    .alert-icon {
+      font-size: 20px;
+    }
+
+    .alert-content h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .alert-content p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(110, 86, 207, 0.15);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* Subjects Grid */
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .subject-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+      z-index: 1;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .subject-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .subject-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .subject-code {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .subject-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .subject-stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--surface-light);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    /* Badges */
+    .grade-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    .grade-a { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+    .grade-b { background: rgba(109, 184, 255, 0.2); color: #6db8ff; }
+    .grade-c { background: rgba(255, 179, 71, 0.2); color: #ffb347; }
+    .grade-s { background: rgba(255, 169, 77, 0.2); color: #ffa94d; }
+    .grade-f { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+
+    /* Test History Table */
+    .test-history-container {
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+
+    .test-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .test-table th {
+      text-align: left;
+      padding: 12px;
+      background: var(--surface-light);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .test-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .test-table tr:hover td {
+      background: var(--surface-light);
+    }
+
+    .edit-btn {
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--primary);
+      background: var(--primary-soft);
+      color: var(--primary-light);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 5px;
+    }
+
+    .edit-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .delete-btn {
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--danger);
+      background: var(--danger-soft);
+      color: var(--danger);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(145deg, var(--grad-c1), var(--grad-c2), var(--grad-c3));
+      background-size: 200% 200%;
+      animation: gradientShift 20s ease infinite;
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      border: 1px solid var(--border);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+      color: var(--text);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* AI Chat */
+    .chat-container {
+      background: linear-gradient(145deg, var(--grad-c1), var(--grad-c2), var(--grad-c3));
+      background-size: 200% 200%;
+      animation: gradientShift 22s ease infinite;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ai-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .ai-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+    }
+
+    .ai-details h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .ai-status {
+      font-size: 11px;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .ai-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    .chat-messages {
+      height: 400px;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .message {
+      display: flex;
+      gap: 14px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .message.ai .message-avatar {
+      background: var(--primary-soft);
+      color: var(--primary-light);
+    }
+
+    .message.user .message-avatar {
+      background: var(--secondary-soft);
+      color: var(--secondary);
+    }
+
+    .message-bubble {
+      padding: 14px 18px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 80%;
+    }
+
+    .message.ai .message-bubble {
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+    }
+
+    .message.user .message-bubble {
+      background: linear-gradient(135deg, var(--primary-soft), var(--secondary-soft));
+      border-top-right-radius: 4px;
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 8px;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 12px;
+      padding: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 14px 18px;
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      font-size: 14px;
+      resize: none;
+      min-height: 50px;
+      max-height: 120px;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .quick-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 0 20px 20px;
+    }
+
+    .chip {
+      padding: 6px 14px;
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+
+    /* Flashcards */
+    .flashcard-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .generate-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .topic-input {
+      flex: 1;
+      padding: 14px 18px;
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text);
+    }
+
+    .btn-primary:disabled,
+    .generate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .generate-btn {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: var(--radius-md);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 30px -10px var(--primary);
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 28px;
+    }
+
+    .score-item {
+      text-align: center;
+    }
+
+    .score-number {
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .score-number.correct { color: var(--success); }
+    .score-number.wrong { color: var(--danger); }
+    .score-number.left { color: var(--primary); }
+
+    .score-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    .flashcard {
+      perspective: 1000px;
+      height: 280px;
+      margin-bottom: 24px;
+      cursor: pointer;
+    }
+
+    .flashcard-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    .flashcard-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      text-align: center;
+      background: var(--surface);
+      background: var(--surface-gradient);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-front {
+      transform: rotateY(0deg);
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, var(--primary-soft), var(--secondary-soft));
+    }
+
+    .card-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+
+    .card-question {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.5;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .card-answer {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .flashcard-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .control-btn {
+      padding: 12px 32px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .control-btn.no {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    .control-btn.yes {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .control-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .counter {
+      font-size: 14px;
+      color: var(--text-dim);
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    /* Table */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: var(--surface-light);
+      padding: 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    tr:hover td {
+      background: var(--surface-light);
+    }
+
+    /* Settings */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .profile-section {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: white;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .profile-info h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .profile-info p {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 9999;
+      padding: 14px 20px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--primary);
+      color: var(--text);
+      font-size: 14px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 320px;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    #toast.toast-success { border-left-color: var(--success); }
+    #toast.toast-error   { border-left-color: var(--danger); }
+    #toast.toast-warning { border-left-color: var(--warning); }
+    #toast.toast-info    { border-left-color: var(--primary); }
+
+    .toast-icon { font-size: 16px; flex-shrink: 0; }
+
+    /* Mobile sidebar overlay */
+    #sidebarOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 998;
+      backdrop-filter: blur(2px);
+    }
+
+    #sidebarOverlay.active { display: block; }
+
+    @media (min-width: 769px) {
+      #sidebarOverlay { display: none !important; }
+      .bottom-nav { display: none !important; }
+      #menuBtn { display: flex !important; }
+    }
+
+    html.light .page-title {
+      background: linear-gradient(135deg, var(--text), #3a1fa8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    html.light .message.ai .message-bubble {
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+    }
+
+    html.light .message.user .message-bubble {
+      background: linear-gradient(135deg, rgba(110,86,207,0.12), rgba(255,179,71,0.10));
+    }
+
+    html.light th {
+      background: var(--surface-light);
+    }
+
+    html.light #toast {
+      box-shadow: 0 8px 24px rgba(110,86,207,0.15);
+    }
+
+    html.light .nav-item.active {
+      background: linear-gradient(135deg, rgba(110,86,207,0.12), rgba(255,179,71,0.08));
+      color: var(--primary);
+      border-left: 3px solid var(--primary);
+    }
+
+    html.light .countdown-box {
+      background: linear-gradient(135deg, rgba(110,86,207,0.08), rgba(78,201,176,0.05));
+    }
+
+    html.light .user-card {
+      background: linear-gradient(135deg, rgba(110,86,207,0.08), rgba(255,179,71,0.05));
+    }
+
+    html.light .modal {
+      background: rgba(30, 20, 80, 0.5);
+    }
+
+    /* Memory: will-change only on frequently animated KPI items */
+    .kpi-item { will-change: background-position; }
+
+    /* Pause all animations when tab is hidden (set by JS) */
+    body.anim-paused .card,
+    body.anim-paused .kpi-item,
+    body.anim-paused .sidebar,
+    body.anim-paused .subject-card,
+    body.anim-paused .modal-content,
+    body.anim-paused .chat-container,
+    body.anim-paused .setup-card,
+    body.anim-paused .welcome-card {
+      animation-play-state: paused !important;
+    }
+
+    /* Respect user's OS motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .card, .kpi-item, .sidebar, .subject-card,
+      .modal-content, .chat-container, .setup-card, .welcome-card {
+        animation: none !important;
+        background-size: 100% 100% !important;
+      }
+    }
+
+    /* Empty States */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-dim);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-state h4 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 240px;
+      }
+      .main {
+        margin-left: 240px;
+        padding: 24px;
+      }
+      .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 280px;
+        z-index: 1000;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+      }
+      .main {
+        margin-left: 0;
+        padding: 12px;
+        padding-bottom: 84px; /* space for bottom nav */
+      }
+      .kpi-grid,
+      .grid-2,
+      .grid-3,
+      .form-grid,
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    }
+
+    /* ============================================================
+       COMPREHENSIVE MOBILE-FIRST IMPROVEMENTS
+       ============================================================ */
+
+    /* Global: prevent horizontal scroll */
+    html, body { overflow-x: hidden; }
+
+    /* Prevent iOS input zoom (must be ≥16px) */
+    .input-field,
+    .form-control,
+    .chat-input,
+    .topic-input { font-size: 16px !important; }
+
+    /* Global touch targets (WCAG: 44px minimum) */
+    .nav-item    { min-height: 48px; }
+    .btn-primary { min-height: 52px; touch-action: manipulation; }
+    .icon-btn    { width: 48px; height: 48px; touch-action: manipulation; }
+    .chip        { min-height: 40px; display: flex; align-items: center; touch-action: manipulation; }
+    .generate-btn { min-height: 52px; touch-action: manipulation; }
+    .control-btn  { min-height: 48px; touch-action: manipulation; }
+
+    /* Edit / Delete buttons — bigger tap targets */
+    .edit-btn {
+      padding: 8px 14px;
+      min-height: 40px;
+      font-size: 12px;
+    }
+    .delete-btn {
+      padding: 8px 14px;
+      min-height: 40px;
+      font-size: 12px;
+    }
+
+    /* Hamburger always shown */
+    #menuBtn { display: flex; }
+
+    /* ── Bottom Navigation Bar (mobile only) ── */
+    .bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      /* ── Top bar ── */
+      .top-bar {
+        padding: 10px 14px;
+        border-radius: var(--radius-md);
+        margin-bottom: 14px;
+        gap: 8px;
+      }
+      .page-info { gap: 8px; }
+      .page-category { font-size: 10px; padding: 3px 8px; }
+      .page-title { font-size: 17px; }
+      .top-actions { gap: 6px; }
+
+      /* Shrink theme toggle slightly */
+      .theme-toggle { width: 64px; height: 36px; }
+      .theme-toggle-thumb { width: 28px; height: 26px; font-size: 13px; }
+      html.light .theme-toggle-thumb { transform: translateX(30px); }
+
+      /* ── Main padding ── */
+      .main { padding: 10px; padding-bottom: 84px; }
+
+      /* ── Cards ── */
+      .card { padding: 16px; }
+      .card-header h3 { font-size: 16px; }
+      .card-badge { font-size: 10px; }
+      .grid-2, .grid-3 { gap: 12px; margin-bottom: 12px; }
+      .form-grid { gap: 12px; margin-bottom: 12px; }
+
+      /* ── Setup screen ── */
+      .setup-wrap { width: 94%; }
+      .setup-card { padding: 22px; border-radius: var(--radius-lg); }
+      .setup-brand h1 { font-size: 34px; }
+      .setup-brand p { font-size: 14px; }
+      .setup-icon { width: 72px; height: 72px; font-size: 34px; border-radius: 24px; }
+      .input-row { grid-template-columns: 1fr; gap: 0; }
+
+      /* ── KPI grid: 2 cols on mobile ── */
+      .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+      .kpi-item { padding: 14px 12px; }
+      .kpi-value { font-size: 22px; }
+      .kpi-label { font-size: 11px; }
+      .kpi-trend { font-size: 11px; }
+
+      /* ── Welcome card ── */
+      .welcome-title { font-size: 20px; }
+      .welcome-quote { font-size: 13px; }
+
+      /* ── Subjects grid ── */
+      .subjects-grid { grid-template-columns: 1fr; }
+      .subject-title { font-size: 16px; }
+
+      /* ── Charts ── */
+      .chart-container { height: 230px; }
+
+      /* ── AI chat ── */
+      .chat-messages { height: 300px; padding: 16px; }
+      .chat-header { padding: 14px 16px; }
+      .chat-input-area { padding: 12px; gap: 8px; }
+      .message-bubble { font-size: 13px; max-width: 88%; }
+      .quick-chips { padding: 0 12px 12px; gap: 6px; flex-wrap: wrap; }
+      .chip { font-size: 12px; padding: 8px 12px; }
+
+      /* ── Flashcards ── */
+      .flashcard { height: 210px; }
+      .card-question { font-size: 16px; }
+      .card-answer { font-size: 14px; }
+      .card-face { padding: 20px; }
+      .generate-bar { flex-direction: column; gap: 10px; }
+      .generate-btn { width: 100%; text-align: center; }
+      .flashcard-controls { gap: 12px; }
+      .control-btn { padding: 12px 22px; }
+      .scoreboard { gap: 20px; }
+      .score-number { font-size: 26px; }
+
+      /* ── Tables: horizontal scroll with momentum ── */
+      .table-wrapper { -webkit-overflow-scrolling: touch; }
+      .test-table { font-size: 13px; }
+      .test-table th, .test-table td { padding: 10px 8px; }
+
+      /* ── Modal ── */
+      .modal-content { padding: 22px; max-height: 90vh; overflow-y: auto; }
+      .form-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+
+      /* ── Analytics select row ── */
+      #panelAnalytics .form-row { display: flex; flex-direction: column; gap: 10px; }
+      #panelAnalytics .btn-primary { margin-top: 0; width: 100%; }
+
+      /* ── History filters ── */
+      #panelHistory .card-header { flex-direction: column; align-items: flex-start; }
+      #panelHistory .card-header > div { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      #historySubjectFilter,
+      #historyGradeFilter,
+      #historySortBy { width: 100% !important; font-size: 14px; }
+
+      /* ── Toast ── */
+      #toast { bottom: 96px; right: 12px; left: 12px; max-width: none; border-radius: var(--radius-md); }
+
+      /* ── Bottom Navigation ── */
+      .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 997;
+        background: var(--glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid var(--border);
+        padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0 -8px 24px rgba(0,0,0,0.3);
+      }
+
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 6px 10px;
+        min-width: 56px;
+        min-height: 52px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+        transition: all 0.2s;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        color: var(--text-dim);
+      }
+
+      .bottom-nav-item:active { opacity: 0.7; transform: scale(0.94); }
+
+      .bottom-nav-item.active {
+        color: var(--primary-light);
+      }
+
+      .bottom-nav-item .bnav-icon {
+        font-size: 20px;
+        line-height: 1;
+        transition: transform 0.2s;
+      }
+
+      .bottom-nav-item.active .bnav-icon {
+        transform: translateY(-2px);
+      }
+
+      .bottom-nav-item .bnav-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+      }
+
+      .bottom-nav-item.active .bnav-label {
+        color: var(--primary-light);
+        font-weight: 600;
+      }
+
+      /* Active indicator pill */
+      .bottom-nav-item.active::after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        width: 20px;
+        height: 3px;
+        background: var(--primary-light);
+        border-radius: 3px;
+      }
+      .bottom-nav-item { position: relative; }
+
+      /* Hide hamburger from top bar on mobile since we have bottom nav */
+      #menuBtn { display: none; }
+
+      /* Keep sidebar overlay working */
+      .sidebar-close-btn { display: flex; }
+    }
+
+    @media (max-width: 480px) {
+      body { font-size: 16px; }
+      .kpi-value { font-size: 20px; }
+      .kpi-item { padding: 12px 10px; }
+      .card { padding: 14px; }
+      .welcome-title { font-size: 18px; }
+      .chart-container { height: 200px; }
+      .form-row { grid-template-columns: 1fr 1fr; }
+      .setup-brand { margin-bottom: 20px; }
+    }
+
+    /* ── Sidebar close button (mobile) ── */
+    .sidebar-close-btn {
+      display: none;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface-hover);
+      color: var(--text-muted);
+      font-size: 18px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      transition: all 0.2s;
+      touch-action: manipulation;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { position: fixed; }
+      .sidebar-close-btn { display: flex; }
+    }
+
+    /* ── Smooth scrolling everywhere ── */
+    * { -webkit-tap-highlight-color: transparent; }
+    .main { scroll-behavior: smooth; }
+  </style>
+</head>
+<body>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <div class="setup-wrap">
+    <div class="setup-brand">
+      <div class="setup-icon">🎓</div>
+      <h1>AcadeMind</h1>
+      <p>AI-powered study assistant</p>
+    </div>
+    <div class="setup-card">
+      <div class="input-group">
+        <label class="input-label">Full Name</label>
+        <input type="text" id="setupName" class="input-field" placeholder="e.g., Alex Johnson" autocomplete="off">
+      </div>
+      <div class="input-row">
+        <div class="input-group">
+          <label class="input-label">Exam Date</label>
+          <input type="date" id="setupExamDate" class="input-field">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Study Level</label>
+          <select id="setupLevel" class="input-field">
+            <option value="secondary">Secondary School</option>
+            <option value="alevel">A-Level / Pre-U</option>
+            <option value="undergraduate">Undergraduate</option>
+            <option value="postgraduate">Postgraduate</option>
+            <option value="professional">Professional</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startApp()">✨ Start Your Journey</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="mainApp">
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close menu">✕</button>
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">🎓</div>
+          <div class="brand-text">
+            <h1>AcadeMind</h1>
+            <p>Study Dashboard</p>
+          </div>
+        </div>
+        <div class="user-card">
+          <div class="avatar" id="avatar">👤</div>
+          <div class="user-info">
+            <h4 id="sidebarName">Student</h4>
+            <span id="sidebarLevel">Secondary</span>
+          </div>
+        </div>
+      </div>
+
+      <nav>
+        <div class="nav-section">
+          <div class="nav-title">Overview</div>
+          <button class="nav-item active" onclick="switchPanel('home', this); closeSidebar()">
+            <span class="nav-icon">🏠</span>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-item" onclick="switchPanel('subjects', this); closeSidebar()">
+            <span class="nav-icon">📚</span>
+            <span>Subjects</span>
+          </button>
+          <button class="nav-item" onclick="switchPanel('analytics', this); closeSidebar()">
+            <span class="nav-icon">📊</span>
+            <span>Analytics</span>
+          </button>
+          <button class="nav-item" onclick="switchPanel('history', this); closeSidebar()">
+            <span class="nav-icon">📋</span>
+            <span>Test History</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-title">AI Tools</div>
+          <button class="nav-item" onclick="switchPanel('ai', this); closeSidebar()">
+            <span class="nav-icon">🤖</span>
+            <span>AI Tutor</span>
+            <span class="badge-ai">FREE</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-title">Account</div>
+          <button class="nav-item" onclick="switchPanel('settings', this); closeSidebar()">
+            <span class="nav-icon">⚙️</span>
+            <span>Settings</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="countdown-box">
+        <div class="countdown-label">📅 Exam Countdown</div>
+        <div class="countdown-grid">
+          <div class="cd-item">
+            <div class="cd-number" id="cdDays">00</div>
+            <div class="cd-label">Days</div>
+          </div>
+          <div class="cd-item">
+            <div class="cd-number" id="cdHours">00</div>
+            <div class="cd-label">Hours</div>
+          </div>
+          <div class="cd-item">
+            <div class="cd-number" id="cdMins">00</div>
+            <div class="cd-label">Mins</div>
+          </div>
+          <div class="cd-item">
+            <div class="cd-number" id="cdSecs">00</div>
+            <div class="cd-label">Secs</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="top-bar">
+        <div class="page-info">
+          <span class="page-category" id="pageCategory">Overview</span>
+          <span class="page-title" id="pageTitle">Dashboard</span>
+        </div>
+        <div class="top-actions">
+          <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle light/dark mode">
+            <div class="theme-toggle-thumb" id="themeThumb">☀️</div>
+            <div class="theme-toggle-track">
+              <span>☀️</span>
+              <span>🌙</span>
+            </div>
+          </button>
+          <button class="icon-btn" onclick="refreshData()" title="Refresh">↻</button>
+          <button class="icon-btn" onclick="exportData()" title="Export">⬇</button>
+          <button class="icon-btn" onclick="toggleSidebar()" id="menuBtn">☰</button>
+        </div>
+      </div>
+
+      <div class="content" id="content">
+        <!-- Home Panel -->
+        <div class="panel active" id="panelHome">
+          <div class="grid-2">
+            <div class="card welcome-card">
+              <div class="welcome-title">Good <span id="greetTime">day</span>, <span id="greetName">Student</span> 👋</div>
+              <div class="welcome-quote" id="dailyQuote">Loading quote...</div>
+              <div class="welcome-date" id="currentDate"></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3>Quick Stats</h3>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                  <div class="kpi-label">📊 Overall Average</div>
+                  <div class="kpi-value" id="overallAvg">—</div>
+                  <div class="kpi-trend" id="overallGrade">No data yet</div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                  <div>
+                    <div class="stat-value" id="totalSubjects">0</div>
+                    <div class="stat-label">Subjects</div>
+                  </div>
+                  <div>
+                    <div class="stat-value" id="totalTests">0</div>
+                    <div class="stat-label">Tests</div>
+                  </div>
+                  <div>
+                    <div class="stat-value" id="bestSubject">—</div>
+                    <div class="stat-label">Best</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <h3>All Subjects Performance (Normalized to /100)</h3>
+                <span class="card-badge">Line Chart</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="subjectsLineChart"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3>Grade Distribution</h3>
+                <span class="card-badge">Overall</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="homeDoughnut"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>AI Insights & Alerts</h3>
+              <span class="card-badge">Personalized</span>
+            </div>
+            <div class="alerts-list" id="alertsContainer"></div>
+          </div>
+        </div>
+
+        <!-- Subjects Panel -->
+        <div class="panel" id="panelSubjects">
+          <div class="form-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>➕ Add Subject</h3>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Subject Name</label>
+                <input type="text" id="subjectName" class="form-control" placeholder="e.g., Mathematics">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Subject Code</label>
+                <input type="text" id="subjectCode" class="form-control" placeholder="e.g., MATH101">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Color Theme</label>
+                <select id="subjectColor" class="form-control">
+                  <option value="#6e56cf">💜 Purple</option>
+                  <option value="#4ec9b0">💚 Teal</option>
+                  <option value="#ffb347">🧡 Orange</option>
+                  <option value="#4ade80">💚 Green</option>
+                  <option value="#6db8ff">💙 Blue</option>
+                  <option value="#f87171">❤️ Red</option>
+                </select>
+              </div>
+              <button class="btn-primary" onclick="addSubject()">Add Subject</button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>📝 Add Test Result</h3>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <select id="testSubject" class="form-control"></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Test Name</label>
+                <input type="text" id="testName" class="form-control" placeholder="e.g., Midterm Exam">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Marks</label>
+                  <input type="number" id="testMarks" class="form-control" placeholder="85">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Total</label>
+                  <input type="number" id="testTotal" class="form-control" placeholder="100" value="100">
+                </div>
+              </div>
+              <button class="btn-primary" onclick="addTest()">Save Test</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Your Subjects</h3>
+              <span class="card-badge" id="subjectCount">0 total</span>
+            </div>
+            <div class="subjects-grid" id="subjectsGrid"></div>
+          </div>
+        </div>
+
+        <!-- Analytics Panel -->
+        <div class="panel" id="panelAnalytics">
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="form-row" style="align-items: center;">
+              <div style="flex: 1;">
+                <label class="form-label">Select Subject</label>
+                <select id="analyticsSubject" class="form-control" onchange="updateAnalytics()"></select>
+              </div>
+              <button class="btn-primary" style="width: auto; padding: 14px 28px; margin-top: 20px;" onclick="updateAnalytics()">View</button>
+            </div>
+          </div>
+          <div id="analyticsContent"></div>
+        </div>
+
+        <!-- AI Tutor Panel -->
+        <div class="panel" id="panelAi">
+          <div class="card" style="padding: 16px 24px; margin-bottom: 20px; background: var(--primary-soft);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="font-size: 24px;">✨</div>
+              <div style="font-size: 13px; color: var(--text-muted);">AI has access to your academic data · Powered by <strong>Pollinations.ai</strong> </div>
+            </div>
+          </div>
+          
+          <div class="chat-container">
+            <div class="chat-header">
+              <div class="ai-info">
+                <div class="ai-avatar">✦</div>
+                <div class="ai-details">
+                  <h4>AcadeMind AI</h4>
+                  <div class="ai-status">Online · Ready to help</div>
+                </div>
+              </div>
+              <button class="icon-btn" onclick="clearChat()">🗑</button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+              <div class="message ai">
+                <div class="message-avatar">✦</div>
+                <div class="message-bubble">
+                  🎓 Hello! I'm <strong>AcadeMind AI</strong>, your personal study coach.<br><br>
+                  I can see your academic data and I'm here to help you succeed! Here's what I can do:<br>
+                  • 📊 Analyse your performance & spot trends<br>
+                  • 📅 Build personalised study plans<br>
+                  • 💡 Explain difficult concepts clearly<br>
+                  • 🎯 Give targeted exam strategies<br><br>
+                  What would you like to work on today? 🚀
+                </div>
+              </div>
+            </div>
+
+            <div class="quick-chips">
+              <span class="chip" onclick="quickAsk('Analyse my academic performance and tell me where I need to improve')">📊 Performance Analysis</span>
+              <span class="chip" onclick="quickAsk('Create a detailed 2-week study plan for my weakest subjects')">📅 Study Plan</span>
+              <span class="chip" onclick="quickAsk('Give me your best exam tips and strategies for my level')">🎯 Exam Tips</span>
+              <span class="chip" onclick="quickAsk('Which topics and subjects should I prioritise right now?')">⚡ What to Prioritise</span>
+            </div>
+
+            <div class="chat-input-area">
+              <textarea class="chat-input" id="chatInput" placeholder="Ask anything about your studies..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+              <button class="btn-primary" style="width: auto; padding: 14px 28px;" onclick="sendChat()">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Test History Panel -->
+        <div class="panel" id="panelHistory">
+          <!-- Summary KPIs -->
+          <div class="kpi-grid" id="historyKpis" style="margin-bottom: 24px;"></div>
+
+          <div class="card">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+              <h3>Test History</h3>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <select id="historySubjectFilter" class="form-control" style="width: auto; padding: 8px 14px; font-size: 13px;" onchange="renderHistoryPanel()">
+                  <option value="">All Subjects</option>
+                </select>
+                <select id="historyGradeFilter" class="form-control" style="width: auto; padding: 8px 14px; font-size: 13px;" onchange="renderHistoryPanel()">
+                  <option value="">All Grades</option>
+                  <option value="A">Grade A</option>
+                  <option value="B">Grade B</option>
+                  <option value="C">Grade C</option>
+                  <option value="S">Grade S</option>
+                  <option value="F">Grade F</option>
+                </select>
+                <select id="historySortBy" class="form-control" style="width: auto; padding: 8px 14px; font-size: 13px;" onchange="renderHistoryPanel()">
+                  <option value="date-desc">Newest First</option>
+                  <option value="date-asc">Oldest First</option>
+                  <option value="score-desc">Highest Score</option>
+                  <option value="score-asc">Lowest Score</option>
+                </select>
+                <button class="icon-btn" onclick="exportHistoryCSV()" title="Export to CSV" style="width: auto; padding: 8px 14px; font-size: 13px; gap: 6px; display: flex; align-items: center;">⬇ CSV</button>
+              </div>
+            </div>
+
+            <div id="historyTableWrapper"></div>
+
+            <div id="historyEmpty" class="empty-state" style="display: none;">
+              <div class="empty-icon">📋</div>
+              <h4>No tests found</h4>
+              <p>Add subjects and test results to see your full history here.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="panel" id="panelSettings">
+          <div class="settings-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Profile Settings</h3>
+              </div>
+              <div class="profile-section">
+                <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('avatarUpload').click()">👤</div>
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="updateAvatar(event)">
+                <div class="profile-info">
+                  <h3 id="profileName">Student Name</h3>
+                  <p id="profileJoined">Joined: —</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Exam Date</label>
+                <input type="date" id="settingsExam" class="form-control" onchange="updateExamDate()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Study Level</label>
+                <select id="settingsLevel" class="form-control" onchange="updateLevel()">
+                  <option value="secondary">Secondary School</option>
+                  <option value="alevel">A-Level / Pre-U</option>
+                  <option value="undergraduate">Undergraduate</option>
+                  <option value="postgraduate">Postgraduate</option>
+                  <option value="professional">Professional</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Data Management</h3>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn-primary" style="background: var(--surface-light); color: var(--text); border: 1px solid var(--border);" onclick="exportData()">📥 Export Data</button>
+                <button class="btn-primary" style="background: var(--surface-light); color: var(--text); border: 1px solid var(--border);" onclick="document.getElementById('importFile').click()">📂 Import Data</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                <button class="btn-primary" style="background: var(--danger-soft); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.3);" onclick="resetAll()">🗑 Reset All Data</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>About AcadeMind</h3>
+              </div>
+              <div style="color: var(--text-muted); font-size: 13px; line-height: 1.8;">
+                <p><strong style="color: var(--text);">AcadeMind v2.0</strong></p>
+                <p>AI-powered study assistant with:</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                  <li>📚 Subject & test tracking</li>
+                  <li>📊 Performance analytics</li>
+                  <li>🤖 AI Tutor (Pollinations.ai)</li>
+                  <li>📋 Full test history & filters</li>
+                  <li>📅 Exam countdown</li>
+                </ul>
+                <p style="margin-top: 16px;">✨ Developed by <strong style="color: var(--primary);">Ometh Virusara</strong></p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>AI Information</h3>
+              </div>
+              <div style="color: var(--text-muted); font-size: 13px; line-height: 1.8;">
+                <p>This app uses <strong style="color: var(--primary);">Pollinations.ai</strong> — a completely free, open AI service that requires no API key or account.</p>
+                <p style="margin-top: 12px;">All AI features:</p>
+                <ul style="margin-left: 20px; margin-top: 8px;">
+                  <li>✓ Context-aware tutoring</li>
+                  <li>✓ Study plan creation</li>
+                  <li>✓ Performance analysis</li>
+                  <li>✓ Multi-turn conversations</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Edit Test Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Test Result</h3>
+      <button class="close-btn" onclick="closeEditModal()">&times;</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Subject</label>
+      <select id="editSubject" class="form-control"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Test Name</label>
+      <input type="text" id="editName" class="form-control">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Marks</label>
+        <input type="number" id="editMarks" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total</label>
+        <input type="number" id="editTotal" class="form-control">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
+  </div>
+</div>
+
+<!-- Mobile sidebar overlay -->
+<div id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Bottom Navigation Bar (mobile only) -->
+<nav class="bottom-nav" id="bottomNav" aria-label="Main navigation">
+  <button class="bottom-nav-item active" id="bnav-home" onclick="switchPanel('home', document.querySelector('.nav-item')); updateBottomNav('home')" aria-label="Dashboard">
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-label">Home</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-subjects" onclick="switchPanel('subjects', null); updateBottomNav('subjects')" aria-label="Subjects">
+    <span class="bnav-icon">📚</span>
+    <span class="bnav-label">Subjects</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-analytics" onclick="switchPanel('analytics', null); updateBottomNav('analytics')" aria-label="Analytics">
+    <span class="bnav-icon">📊</span>
+    <span class="bnav-label">Analytics</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-ai" onclick="switchPanel('ai', null); updateBottomNav('ai')" aria-label="AI Tutor">
+    <span class="bnav-icon">🤖</span>
+    <span class="bnav-label">AI</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-history" onclick="switchPanel('history', null); updateBottomNav('history')" aria-label="History">
+    <span class="bnav-icon">📋</span>
+    <span class="bnav-label">History</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-settings" onclick="switchPanel('settings', null); updateBottomNav('settings')" aria-label="Settings">
+    <span class="bnav-icon">⚙️</span>
+    <span class="bnav-label">Settings</span>
+  </button>
+</nav>
+
+<!-- Toast Notification -->
+<div id="toast"><span class="toast-icon"></span><span id="toastMsg"></span></div>
+
+<script>
+// ==================== STATE ====================
+let db = {
+  user: null,
+  subjects: [],
+  examDate: '',
+  level: 'secondary',
+  avatar: null,
+  joined: null
+};
+
+let charts = {
+  subjectsLine: null,
+  homeDoughnut: null,
+  trend: null
+};
+
+let chatHistory = [];
+let isThinking = false;
+let flashcards = [];
+let flashcardIndex = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let countdownTimer = null;
+let currentEditTest = null;
+
+const QUOTES = [
+  "Success is the sum of small efforts repeated day after day.",
+  "The expert in anything was once a beginner.",
+  "Hard work beats talent when talent doesn't work hard.",
+  "Learning is the only thing the mind never exhausts.",
+  "Don't watch the clock; do what it does — keep going.",
+  "The beautiful thing about learning is that no one can take it away from you.",
+  "Your only limit is your mind.",
+  "Study while others are sleeping; work while others are loafing."
+];
+
+// ==================== INITIALIZATION ====================
+function loadData() {
+  const saved = localStorage.getItem('academind_v2');
+  if (saved) {
+    try {
+      db = JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load data');
+    }
+  }
+}
+
+function saveData() {
+  localStorage.setItem('academind_v2', JSON.stringify(db));
+}
+
+function startApp() {
+  const name = document.getElementById('setupName').value.trim();
+  const examDate = document.getElementById('setupExamDate').value;
+  const level = document.getElementById('setupLevel').value;
+
+  if (!name) {
+    toast('Please enter your name', 'error');
+    return;
+  }
+
+  db.user = { name };
+  db.examDate = examDate;
+  db.level = level;
+  db.joined = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  
+  saveData();
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  
+  initializeApp();
+}
+
+function initializeApp() {
+  updateSidebar();
+  updateDashboard();
+  updateSubjectsPanel();
+  updateSubjectSelects();
+  updateSettingsPanel();
+  startCountdown();
+  updateGreeting();
+  updateEditSubjectSelect();
+
+  // Set current date
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+
+  // Set daily quote
+  document.getElementById('dailyQuote').textContent = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+}
+
+// ==================== UI UPDATES ====================
+function updateSidebar() {
+  const name = db.user?.name || 'Student';
+  document.getElementById('sidebarName').textContent = name.split(' ')[0];
+  document.getElementById('sidebarLevel').textContent = getLevelText(db.level);
+  
+  const avatar = document.getElementById('avatar');
+  if (db.avatar) {
+    avatar.innerHTML = `<img src="${db.avatar}" alt="avatar">`;
+  } else {
+    avatar.textContent = '👤';
+  }
+}
+
+function getLevelText(level) {
+  const levels = {
+    secondary: 'Secondary School',
+    alevel: 'A-Level',
+    undergraduate: 'Undergraduate',
+    postgraduate: 'Postgraduate',
+    professional: 'Professional'
+  };
+  return levels[level] || level;
+}
+
+function updateGreeting() {
+  const hour = new Date().getHours();
+  let greeting = 'day';
+  if (hour < 12) greeting = 'morning';
+  else if (hour < 17) greeting = 'afternoon';
+  else greeting = 'evening';
+  
+  document.getElementById('greetTime').textContent = greeting;
+  document.getElementById('greetName').textContent = db.user?.name?.split(' ')[0] || 'Student';
+}
+
+// ==================== COUNTDOWN ====================
+function startCountdown() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  updateCountdown();
+  countdownTimer = setInterval(updateCountdown, 1000);
+}
+
+function updateCountdown() {
+  if (!db.examDate) {
+    ['cdDays', 'cdHours', 'cdMins', 'cdSecs'].forEach(id => 
+      document.getElementById(id).textContent = '--'
+    );
+    return;
+  }
+
+  const exam = new Date(db.examDate + 'T23:59:59');
+  const now = new Date();
+  const diff = exam - now;
+
+  if (diff <= 0) {
+    ['cdDays', 'cdHours', 'cdMins', 'cdSecs'].forEach(id => 
+      document.getElementById(id).textContent = '00'
+    );
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  document.getElementById('cdDays').textContent = String(days).padStart(2, '0');
+  document.getElementById('cdHours').textContent = String(hours).padStart(2, '0');
+  document.getElementById('cdMins').textContent = String(minutes).padStart(2, '0');
+  document.getElementById('cdSecs').textContent = String(seconds).padStart(2, '0');
+}
+
+// ==================== GRADE FUNCTIONS (Updated) ====================
+function getGradeInfo(percentage) {
+  if (percentage >= 75) return { grade: 'A', color: '#4ade80', class: 'grade-a' };
+  if (percentage >= 65) return { grade: 'B', color: '#6db8ff', class: 'grade-b' };
+  if (percentage >= 55) return { grade: 'C', color: '#ffb347', class: 'grade-c' };
+  if (percentage >= 35) return { grade: 'S', color: '#ffa94d', class: 'grade-s' };
+  return { grade: 'F', color: '#f87171', class: 'grade-f' };
+}
+
+// ==================== DASHBOARD ====================
+function updateDashboard() {
+  const subjects = db.subjects;
+  const tests = subjects.reduce((sum, s) => sum + s.tests.length, 0);
+
+  document.getElementById('totalSubjects').textContent = subjects.length;
+  document.getElementById('totalTests').textContent = tests;
+
+  const validSubjects = subjects.filter(s => s.tests.length > 0);
+  
+  if (validSubjects.length > 0) {
+    const averages = validSubjects.map(s => ({
+      name: s.name,
+      avg: s.tests.reduce((sum, t) => sum + (t.marks / t.total * 100), 0) / s.tests.length
+    }));
+
+    const overall = averages.reduce((sum, s) => sum + s.avg, 0) / averages.length;
+    const best = averages.reduce((a, b) => a.avg > b.avg ? a : b);
+    const grade = getGradeInfo(overall);
+
+    document.getElementById('overallAvg').textContent = overall.toFixed(1) + '%';
+    document.getElementById('overallGrade').textContent = `Grade ${grade.grade}`;
+    document.getElementById('bestSubject').textContent = best.name;
+
+    updateSubjectsLineChart(validSubjects);
+    updateDoughnutChart(subjects);
+    updateAlerts(validSubjects, averages, overall, best);
+  } else {
+    document.getElementById('overallAvg').textContent = '—';
+    document.getElementById('overallGrade').textContent = 'No data';
+    document.getElementById('bestSubject').textContent = '—';
+  }
+}
+
+function updateSubjectsLineChart(subjects) {
+  const ctx = document.getElementById('subjectsLineChart').getContext('2d');
+  
+  if (charts.subjectsLine) charts.subjectsLine.destroy();
+
+  // theme-aware chart colours
+  const isLight = document.documentElement.classList.contains('light');
+  const tickColor = isLight ? '#4b5270' : '#9ca3b0';
+  const gridColor = isLight ? 'rgba(110,86,207,0.08)' : 'rgba(255,255,255,0.05)';
+
+  if (!subjects.length) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    return;
+  }
+
+  // Find maximum number of tests across all subjects
+  const maxTests = Math.max(...subjects.map(s => s.tests.length));
+  const labels = Array.from({ length: maxTests }, (_, i) => `Test ${i + 1}`);
+
+  const datasets = subjects.map(s => {
+    const scores = s.tests.map(t => (t.marks / t.total * 100).toFixed(1));
+    return {
+      label: s.name,
+      data: scores,
+      borderColor: s.color,
+      backgroundColor: s.color + '20',
+      tension: 0.4,
+      fill: false,
+      borderWidth: 2,
+      pointBackgroundColor: s.color,
+      pointBorderColor: '#fff',
+      pointRadius: 4
+    };
+  });
+
+  charts.subjectsLine = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          position: 'top',
+          labels: { color: tickColor }
+        }
+      },
+      scales: {
+        y: {
+          min: 0,
+          max: 100,
+          grid: { color: gridColor },
+          ticks: { color: tickColor, callback: v => v + '%' }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: tickColor }
+        }
+      }
+    }
+  });
+}
+
+function updateDoughnutChart(subjects) {
+  const ctx = document.getElementById('homeDoughnut').getContext('2d');
+  
+  if (charts.homeDoughnut) charts.homeDoughnut.destroy();
+
+  const allScores = subjects.flatMap(s => s.tests.map(t => t.marks / t.total * 100));
+  
+  if (!allScores.length) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    return;
+  }
+
+  const isLight = document.documentElement.classList.contains('light');
+  const tickColor = isLight ? '#4b5270' : '#9ca3b0';
+
+  const grades = { A: 0, B: 0, C: 0, S: 0, F: 0 };
+  allScores.forEach(score => {
+    if (score >= 75) grades.A++;
+    else if (score >= 65) grades.B++;
+    else if (score >= 55) grades.C++;
+    else if (score >= 35) grades.S++;
+    else grades.F++;
+  });
+
+  charts.homeDoughnut = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['A (75-100)', 'B (65-74)', 'C (55-64)', 'S (35-54)', 'F (0-34)'],
+      datasets: [{
+        data: Object.values(grades),
+        backgroundColor: ['#4ade80', '#6db8ff', '#ffb347', '#ffa94d', '#f87171'],
+        borderColor: 'transparent'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: tickColor, font: { size: 11 }, boxWidth: 10 }
+        }
+      }
+    }
+  });
+}
+
+function updateAlerts(validSubjects, averages, overall, best) {
+  const container = document.getElementById('alertsContainer');
+  
+  if (!validSubjects.length) {
+    container.innerHTML = '<div class="empty-state">Add subjects and tests to see AI insights</div>';
+    return;
+  }
+
+  const worst = averages.reduce((a, b) => a.avg < b.avg ? a : b);
+  const grade = getGradeInfo(overall);
+
+  let alerts = [
+    {
+      type: 'info',
+      icon: '📊',
+      title: `Overall Performance: Grade ${grade.grade}`,
+      message: `Your overall average is ${overall.toFixed(1)}%. ${overall >= 75 ? 'Excellent work!' : overall >= 55 ? 'Good progress — keep pushing!' : 'Focus on weak subjects to improve.'}`
+    },
+    {
+      type: 'success',
+      icon: '🏆',
+      title: `Strongest Subject: ${best.name}`,
+      message: `${best.name} is your best at ${best.avg.toFixed(1)}%. Maintain this momentum!`
+    }
+  ];
+
+  if (worst.avg < 55) {
+    alerts.push({
+      type: 'warning',
+      icon: '⚠️',
+      title: `Needs Attention: ${worst.name}`,
+      message: `${worst.name} is at ${worst.avg.toFixed(1)}%. Focus extra study time here.`
+    });
+  }
+
+  // Check recent trends
+  validSubjects.forEach(s => {
+    if (s.tests.length >= 2) {
+      const last = s.tests[s.tests.length - 1];
+      const prev = s.tests[s.tests.length - 2];
+      const lastPct = last.marks / last.total * 100;
+      const prevPct = prev.marks / prev.total * 100;
+      
+      if (lastPct > prevPct + 5) {
+        alerts.push({
+          type: 'success',
+          icon: '📈',
+          title: `Improving: ${s.name}`,
+          message: `Up ${(lastPct - prevPct).toFixed(1)}% from last test!`
+        });
+      } else if (lastPct < prevPct - 5) {
+        alerts.push({
+          type: 'warning',
+          icon: '📉',
+          title: `Declining: ${s.name}`,
+          message: `Down ${(prevPct - lastPct).toFixed(1)}% from last test. Review recent material.`
+        });
+      }
+    }
+  });
+
+  // Exam countdown alert
+  if (db.examDate) {
+    const cdText = document.getElementById('cdDays').textContent;
+    const days = parseInt(cdText);
+    if (!isNaN(days) && days <= 14 && days > 0) {
+      alerts.push({
+        type: 'warning',
+        icon: '⏰',
+        title: `Exam in ${days} days!`,
+        message: 'Time to focus on revision and practice tests.'
+      });
+    }
+  }
+
+  container.innerHTML = alerts.map(a => `
+    <div class="alert-item ${a.type}">
+      <span class="alert-icon">${a.icon}</span>
+      <div class="alert-content">
+        <h4>${a.title}</h4>
+        <p>${a.message}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== TEST EDIT FUNCTIONS ====================
+function openEditModal(testId, subjectId) {
+  const subject = db.subjects.find(s => s.id === subjectId);
+  const test = subject.tests.find(t => t.id === testId);
+  
+  currentEditTest = { testId, subjectId };
+  
+  updateEditSubjectSelect();
+  document.getElementById('editSubject').value = subjectId;
+  document.getElementById('editName').value = test.name;
+  document.getElementById('editMarks').value = test.marks;
+  document.getElementById('editTotal').value = test.total;
+  
+  document.getElementById('editModal').classList.add('active');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('active');
+  currentEditTest = null;
+}
+
+function saveEdit() {
+  if (!currentEditTest) return;
+  
+  const newSubjectId = parseInt(document.getElementById('editSubject').value);
+  const newName = document.getElementById('editName').value.trim();
+  const newMarks = parseFloat(document.getElementById('editMarks').value);
+  const newTotal = parseFloat(document.getElementById('editTotal').value);
+  
+  if (!newName || isNaN(newMarks) || isNaN(newTotal)) {
+    toast('Please fill all fields', 'error');
+    return;
+  }
+  
+  if (newMarks > newTotal) {
+    toast('Marks cannot exceed total', 'error');
+    return;
+  }
+  
+  // Find the test
+  const oldSubject = db.subjects.find(s => s.id === currentEditTest.subjectId);
+  const test = oldSubject.tests.find(t => t.id === currentEditTest.testId);
+  
+  // If subject changed, move the test
+  if (newSubjectId !== currentEditTest.subjectId) {
+    // Remove from old subject
+    oldSubject.tests = oldSubject.tests.filter(t => t.id !== currentEditTest.testId);
+    
+    // Add to new subject
+    const newSubject = db.subjects.find(s => s.id === newSubjectId);
+    test.name = newName;
+    test.marks = newMarks;
+    test.total = newTotal;
+    newSubject.tests.push(test);
+  } else {
+    // Just update the test
+    test.name = newName;
+    test.marks = newMarks;
+    test.total = newTotal;
+  }
+  
+  saveData();
+  updateDashboard();
+  updateSubjectsPanel();
+  updateAnalytics();
+  closeEditModal();
+  if (document.getElementById('panelHistory').classList.contains('active')) renderHistoryPanel();
+  toast('Test updated successfully', 'success');
+}
+
+function deleteTest(testId, subjectId) {
+  if (!confirm('Delete this test?')) return;
+  
+  const subject = db.subjects.find(s => s.id === subjectId);
+  subject.tests = subject.tests.filter(t => t.id !== testId);
+  
+  saveData();
+  updateDashboard();
+  updateSubjectsPanel();
+  updateAnalytics();
+  if (document.getElementById('panelHistory').classList.contains('active')) renderHistoryPanel();
+  toast('Test deleted', 'info');
+}
+
+// ==================== SUBJECTS ====================
+function addSubject() {
+  const name = document.getElementById('subjectName').value.trim();
+  const code = document.getElementById('subjectCode').value.trim();
+  const color = document.getElementById('subjectColor').value;
+
+  if (!name) {
+    toast('Please enter a subject name', 'error');
+    return;
+  }
+
+  db.subjects.push({
+    id: Date.now(),
+    name,
+    code,
+    color,
+    tests: []
+  });
+
+  document.getElementById('subjectName').value = '';
+  document.getElementById('subjectCode').value = '';
+
+  saveData();
+  updateSubjectsPanel();
+  updateSubjectSelects();
+  updateEditSubjectSelect();
+  updateDashboard();
+  toast(`✅ ${name} added`, 'success');
+}
+
+function deleteSubject(id) {
+  if (!confirm('Delete this subject and all its tests?')) return;
+  
+  db.subjects = db.subjects.filter(s => s.id !== id);
+  saveData();
+  updateSubjectsPanel();
+  updateSubjectSelects();
+  updateEditSubjectSelect();
+  updateDashboard();
+  updateAnalytics();
+  toast('Subject deleted', 'info');
+}
+
+function addTest() {
+  const subjectId = parseInt(document.getElementById('testSubject').value);
+  const name = document.getElementById('testName').value.trim();
+  const marks = parseFloat(document.getElementById('testMarks').value);
+  const total = parseFloat(document.getElementById('testTotal').value);
+
+  if (!subjectId || !name || isNaN(marks) || isNaN(total)) {
+    toast('Please fill all fields', 'error');
+    return;
+  }
+
+  if (marks > total) {
+    toast('Marks cannot exceed total', 'error');
+    return;
+  }
+
+  const subject = db.subjects.find(s => s.id === subjectId);
+  subject.tests.push({
+    id: Date.now(),
+    name,
+    marks,
+    total,
+    date: new Date().toLocaleDateString()
+  });
+
+  document.getElementById('testName').value = '';
+  document.getElementById('testMarks').value = '';
+
+  saveData();
+  updateSubjectsPanel();
+  updateDashboard();
+  updateAnalytics();
+  toast(`✅ Test added to ${subject.name}`, 'success');
+}
+
+function updateSubjectsPanel() {
+  const grid = document.getElementById('subjectsGrid');
+  const count = document.getElementById('subjectCount');
+
+  count.textContent = db.subjects.length + ' total';
+
+  if (!db.subjects.length) {
+    grid.innerHTML = '<div class="empty-state">No subjects yet. Add your first subject!</div>';
+    return;
+  }
+
+  grid.innerHTML = db.subjects.map(s => {
+    const tests = s.tests.length;
+    const avg = tests ? s.tests.reduce((sum, t) => sum + (t.marks / t.total * 100), 0) / tests : null;
+    const grade = avg ? getGradeInfo(avg) : null;
+    const best = tests ? Math.max(...s.tests.map(t => t.marks / t.total * 100)).toFixed(1) + '%' : '—';
+
+    return `
+      <div class="subject-card">
+        <div class="subject-header">
+          <div>
+            <div class="subject-title">${s.name}</div>
+            <div class="subject-code">${s.code || 'No code'}</div>
+          </div>
+          ${grade ? `<span class="grade-badge ${grade.class}">${grade.grade}</span>` : ''}
+        </div>
+        <div class="subject-stats">
+          <div class="subject-stat">
+            <div class="stat-value">${tests}</div>
+            <div class="stat-label">Tests</div>
+          </div>
+          <div class="subject-stat">
+            <div class="stat-value" style="color: ${s.color}">${avg ? avg.toFixed(1) + '%' : '—'}</div>
+            <div class="stat-label">Average</div>
+          </div>
+          <div class="subject-stat">
+            <div class="stat-value">${best}</div>
+            <div class="stat-label">Best</div>
+          </div>
+        </div>
+        ${avg ? `
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${avg}%; background: ${s.color};"></div>
+          </div>
+        ` : ''}
+        <button onclick="deleteSubject(${s.id})" style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 18px;">×</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateSubjectSelects() {
+  const testSelect = document.getElementById('testSubject');
+  const analyticsSelect = document.getElementById('analyticsSubject');
+
+  testSelect.innerHTML = '<option value="">Select a subject</option>';
+  analyticsSelect.innerHTML = '<option value="">Select a subject</option>';
+
+  db.subjects.forEach(s => {
+    testSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+    if (s.tests.length) {
+      analyticsSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+    }
+  });
+}
+
+function updateEditSubjectSelect() {
+  const editSelect = document.getElementById('editSubject');
+  editSelect.innerHTML = '';
+  
+  db.subjects.forEach(s => {
+    editSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+  });
+}
+
+// ==================== ANALYTICS ====================
+function updateAnalytics() {
+  const subjectId = parseInt(document.getElementById('analyticsSubject').value);
+  const container = document.getElementById('analyticsContent');
+
+  if (!subjectId) {
+    container.innerHTML = '<div class="empty-state">Select a subject with test data to view analytics</div>';
+    return;
+  }
+
+  const subject = db.subjects.find(s => s.id === subjectId);
+  if (!subject || !subject.tests.length) {
+    container.innerHTML = '<div class="empty-state">No tests found for this subject</div>';
+    return;
+  }
+
+  const tests = subject.tests;
+  const scores = tests.map(t => t.marks / t.total * 100);
+  const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const best = Math.max(...scores);
+  const worst = Math.min(...scores);
+  const grade = getGradeInfo(avg);
+
+  let trend = 'stable';
+  if (tests.length >= 2) {
+    const first = scores[0];
+    const last = scores[scores.length - 1];
+    if (last > first + 5) trend = 'up';
+    else if (last < first - 5) trend = 'down';
+  }
+
+  container.innerHTML = `
+    <div class="kpi-grid" style="margin-bottom: 20px;">
+      <div class="kpi-item">
+        <div class="kpi-label">📊 Average</div>
+        <div class="kpi-value" style="color: ${grade.color}">${avg.toFixed(1)}%</div>
+        <div class="kpi-trend">Grade ${grade.grade}</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">🏆 Best Score</div>
+        <div class="kpi-value" style="color: #4ade80">${best.toFixed(1)}%</div>
+        <div class="kpi-trend">Personal best</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">📉 Lowest Score</div>
+        <div class="kpi-value" style="color: #f87171">${worst.toFixed(1)}%</div>
+        <div class="kpi-trend">Room to improve</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">📈 Trend</div>
+        <div class="kpi-value" style="font-size: 28px; color: ${trend === 'up' ? '#4ade80' : trend === 'down' ? '#f87171' : '#ffb347'}">
+          ${trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
+        </div>
+        <div class="kpi-trend">${trend === 'up' ? 'Improving' : trend === 'down' ? 'Declining' : 'Stable'}</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 20px;">
+      <div class="card">
+        <div class="card-header">
+          <h3>Score Trend</h3>
+        </div>
+        <div class="chart-container">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Test History</h3>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Test</th><th>Score</th><th>%</th><th>Grade</th></tr>
+            </thead>
+            <tbody>
+              ${tests.map((t, i) => {
+                const pct = t.marks / t.total * 100;
+                const g = getGradeInfo(pct);
+                return `<tr>
+                  <td>${t.name || `Test ${i+1}`}</td>
+                  <td>${t.marks}/${t.total}</td>
+                  <td>${pct.toFixed(1)}%</td>
+                  <td><span class="grade-badge ${g.class}" style="font-size: 10px;">${g.grade}</span></td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Render trend chart
+  setTimeout(() => {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    if (charts.trend) charts.trend.destroy();
+    const isLight = document.documentElement.classList.contains('light');
+    const tc = isLight ? '#4b5270' : '#9ca3b0';
+    const gc = isLight ? 'rgba(110,86,207,0.08)' : 'rgba(255,255,255,0.05)';
+    charts.trend = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: tests.map((_, i) => `Test ${i+1}`),
+        datasets: [{
+          label: 'Score %',
+          data: scores.map(s => s.toFixed(1)),
+          borderColor: subject.color,
+          backgroundColor: subject.color + '20',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: subject.color,
+          pointBorderColor: '#fff',
+          pointRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min: 0, max: 100, grid: { color: gc }, ticks: { color: tc } },
+          x: { grid: { display: false }, ticks: { color: tc } }
+        }
+      }
+    });
+  }, 50);
+}
+
+// ==================== AI CHAT ====================
+const AI_SYSTEM_PROMPT = (context) => `You are AcadeMind AI 🎓 — a warm, expert academic tutor and study coach.
+
+STUDENT PROFILE:
+${context}
+
+RESPONSE RULES (follow strictly):
+1. Always start your reply with a relevant emoji that matches the topic (📊 for analysis, 📅 for planning, 💡 for concepts, 🎯 for tips, 🏆 for praise, ⚠️ for warnings, 🔥 for motivation, 📚 for study help, etc.)
+2. Use emojis naturally throughout your reply to make it engaging — at least 3-5 per response
+3. Use **bold** for important terms and key figures
+4. Use bullet points starting with • for lists
+5. Keep replies concise and actionable (max 200 words unless asked to elaborate)
+6. Always be encouraging and positive, even when flagging weaknesses
+7. Reference the student's actual data when relevant (their subjects, scores, exam date)
+8. End with a short motivational nudge or a follow-up question to keep them engaged`;
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const sendBtn = document.querySelector('#panelAi .btn-primary');
+  const message = input.value.trim();
+
+  if (!message || isThinking) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  addMessage(message, 'user');
+
+  chatHistory.push({ role: 'user', content: message });
+  // Keep last 8 messages (4 exchanges) to control memory & tokens
+  if (chatHistory.length > 8) chatHistory = chatHistory.slice(-8);
+
+  isThinking = true;
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '⏳'; }
+  const typingId = showTyping();
+
+  const context = buildAIContext();
+
+  try {
+    const messages = [
+      { role: 'user',      content: AI_SYSTEM_PROMPT(context) },
+      { role: 'assistant', content: `🎓 Hello! I'm AcadeMind AI, your personal study coach. I have access to your academic data and I'm here to help you improve. What would you like to work on?` },
+      ...chatHistory
+    ];
+
+    const response = await fetch('https://text.pollinations.ai/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, model: 'openai' })
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const text = await response.text();
+    removeTyping(typingId);
+    addMessage(text, 'ai');
+    chatHistory.push({ role: 'assistant', content: text });
+
+  } catch {
+    removeTyping(typingId);
+    // GET fallback
+    try {
+      const prompt = `${AI_SYSTEM_PROMPT(context)}\n\nStudent asks: ${message}`;
+      const resp = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
+      if (!resp.ok) throw new Error();
+      const text = await resp.text();
+      addMessage(text, 'ai');
+      chatHistory.push({ role: 'assistant', content: text });
+    } catch {
+      chatHistory.pop(); // remove failed user msg
+      addMessage('⚠️ I\'m having trouble connecting right now. Please check your internet and try again in a moment!', 'ai');
+      toast('AI service unavailable', 'error');
+    }
+  }
+
+  isThinking = false;
+  if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
+}
+
+function buildAIContext() {
+  const subjects = db.subjects.filter(s => s.tests.length > 0);
+  const examDate = db.examDate || 'not set';
+  const daysLeft = db.examDate
+    ? Math.max(0, Math.ceil((new Date(db.examDate) - new Date()) / 86400000))
+    : null;
+
+  let context = `Name: ${db.user?.name || 'Student'} | Level: ${getLevelText(db.level)} | Exam: ${examDate}${daysLeft !== null ? ` (${daysLeft} days away)` : ''}\n\n`;
+
+  if (!subjects.length) {
+    context += 'No test data recorded yet.\n';
+    return context;
+  }
+
+  const overallAvg = subjects.reduce((sum, s) => {
+    const avg = s.tests.reduce((a, t) => a + (t.marks / t.total * 100), 0) / s.tests.length;
+    return sum + avg;
+  }, 0) / subjects.length;
+
+  context += `Overall average: ${overallAvg.toFixed(1)}%\n\nSubjects:\n`;
+
+  subjects.forEach(s => {
+    const scores = s.tests.map(t => t.marks / t.total * 100);
+    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const trend = scores.length >= 2
+      ? (scores[scores.length - 1] > scores[0] ? '↑ improving' : scores[scores.length - 1] < scores[0] ? '↓ declining' : '→ stable')
+      : 'n/a';
+    context += `• ${s.name}: avg ${avg.toFixed(1)}% | best ${Math.max(...scores).toFixed(1)}% | ${s.tests.length} tests | trend: ${trend}\n`;
+  });
+
+  return context;
+}
+
+function addMessage(text, sender) {
+  const container = document.getElementById('chatMessages');
+  const msg = document.createElement('div');
+  msg.className = `message ${sender}`;
+  
+  msg.innerHTML = `
+    <div class="message-avatar">${sender === 'ai' ? '✦' : '👤'}</div>
+    <div class="message-bubble">${formatMessage(text)}</div>
+  `;
+  
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+
+  // Memory guard: keep max 40 message nodes in DOM
+  const msgs = container.querySelectorAll('.message');
+  if (msgs.length > 40) msgs[0].remove();
+}
+
+function showTyping() {
+  const id = 'typing-' + Date.now();
+  const container = document.getElementById('chatMessages');
+  const typing = document.createElement('div');
+  typing.className = 'message ai';
+  typing.id = id;
+  typing.innerHTML = `
+    <div class="message-avatar">✦</div>
+    <div class="message-bubble">
+      <div class="typing-indicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>
+  `;
+  container.appendChild(typing);
+  container.scrollTop = container.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) {
+  const typing = document.getElementById(id);
+  if (typing) typing.remove();
+}
+
+function formatMessage(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*((?!\*)[^*]+)\*/g, '<em>$1</em>')
+    .replace(/^#{1,3}\s+(.+)$/gm, '<strong>$1</strong>')
+    .replace(/^[•\-\*]\s+(.+)$/gm, '• $1')
+    .replace(/\n/g, '<br>');
+}
+
+function quickAsk(question) {
+  switchPanel('ai');
+  // Switch nav item
+  document.querySelectorAll('.nav-item').forEach(i => {
+    if (i.textContent.includes('AI Tutor')) i.classList.add('active');
+    else i.classList.remove('active');
+  });
+  setTimeout(() => {
+    document.getElementById('chatInput').value = question;
+    sendChat();
+  }, 100);
+}
+
+function clearChat() {
+  chatHistory = [];
+  document.getElementById('chatMessages').innerHTML = `
+    <div class="message ai">
+      <div class="message-avatar">✦</div>
+      <div class="message-bubble">Chat cleared! Ask me anything about your studies.</div>
+    </div>
+  `;
+}
+
+// ==================== FLASHCARDS ====================
+async function generateFlashcards() {
+  const topic = document.getElementById('flashTopic').value.trim();
+  const genBtn = document.querySelector('.generate-btn');
+  
+  if (!topic) {
+    toast('Please enter a topic', 'error');
+    return;
+  }
+
+  document.getElementById('flashcardEmpty').style.display = 'none';
+  document.getElementById('flashcardContent').style.display = 'none';
+  
+  const loadingDiv = document.createElement('div');
+  loadingDiv.className = 'empty-state';
+  loadingDiv.id = 'flashLoading';
+  loadingDiv.innerHTML = '<div class="typing-indicator" style="justify-content: center;"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div><p style="margin-top: 16px;">Generating flashcards with AI...</p>';
+  document.getElementById('flashcardEmpty').parentNode.insertBefore(loadingDiv, document.getElementById('flashcardEmpty'));
+
+  if (genBtn) { genBtn.disabled = true; genBtn.textContent = 'Generating...'; }
+
+  try {
+    const prompt = `Create exactly 6 flashcards about "${topic}". 
+Return ONLY a valid JSON array, no markdown, no explanation. 
+Format: [{"q":"question here","a":"answer here"}]`;
+
+    let text = '';
+    try {
+      const response = await fetch('https://text.pollinations.ai/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: prompt }],
+          model: 'openai',
+          jsonMode: true
+        })
+      });
+      text = await response.text();
+    } catch {
+      // Fallback to GET
+      const resp = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
+      text = await resp.text();
+    }
+    
+    // Robust JSON extraction
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('No JSON array found in response');
+    flashcards = JSON.parse(jsonMatch[0]);
+    
+    if (!Array.isArray(flashcards) || flashcards.length === 0) throw new Error('Invalid flashcard data');
+    // Ensure all cards have q and a
+    flashcards = flashcards.filter(c => c.q && c.a);
+    if (flashcards.length === 0) throw new Error('No valid flashcards');
+    
+    flashcardIndex = 0;
+    correctCount = 0;
+    wrongCount = 0;
+
+    document.getElementById('flashLoading').remove();
+    document.getElementById('flashcardContent').style.display = 'block';
+    updateFlashcard();
+    toast(`${flashcards.length} flashcards generated!`, 'success');
+  } catch (error) {
+    if (document.getElementById('flashLoading')) document.getElementById('flashLoading').remove();
+    document.getElementById('flashcardEmpty').style.display = 'block';
+    toast('Failed to generate flashcards. Try a more specific topic.', 'error');
+  } finally {
+    if (genBtn) { genBtn.disabled = false; genBtn.textContent = 'Generate ✦'; }
+  }
+}
+
+function updateFlashcard() {
+  if (flashcardIndex >= flashcards.length) {
+    document.getElementById('cardQuestion').textContent = '🎉 Complete!';
+    document.getElementById('cardAnswer').textContent = `You got ${correctCount}/${flashcards.length} correct`;
+    document.getElementById('cardCounter').textContent = 'Done!';
+    return;
+  }
+
+  const card = flashcards[flashcardIndex];
+  document.getElementById('cardQuestion').textContent = card.q;
+  document.getElementById('cardAnswer').textContent = card.a;
+  document.getElementById('cardCounter').textContent = `${flashcardIndex + 1} / ${flashcards.length}`;
+  document.getElementById('correctCount').textContent = correctCount;
+  document.getElementById('wrongCount').textContent = wrongCount;
+  document.getElementById('leftCount').textContent = flashcards.length - flashcardIndex;
+  
+  // Reset flip state
+  document.getElementById('flashcardInner').classList.remove('flipped');
+}
+
+function flipCard() {
+  document.getElementById('flashcardInner').classList.toggle('flipped');
+}
+
+function rateCard(knew) {
+  if (flashcardIndex >= flashcards.length) return;
+  
+  if (knew) correctCount++;
+  else wrongCount++;
+  
+  flashcardIndex++;
+  updateFlashcard();
+}
+
+// ==================== SETTINGS ====================
+function updateSettingsPanel() {
+  document.getElementById('profileName').textContent = db.user?.name || 'Student';
+  document.getElementById('profileJoined').textContent = `Joined: ${db.joined || '—'}`;
+  
+  if (db.examDate) {
+    document.getElementById('settingsExam').value = db.examDate;
+  }
+  
+  document.getElementById('settingsLevel').value = db.level || 'secondary';
+
+  const avatar = document.getElementById('profileAvatar');
+  if (db.avatar) {
+    avatar.innerHTML = `<img src="${db.avatar}" style="width: 100%; height: 100%; object-fit: cover;">`;
+  } else {
+    avatar.textContent = '👤';
+  }
+}
+
+function updateExamDate() {
+  db.examDate = document.getElementById('settingsExam').value;
+  saveData();
+  startCountdown();
+  toast('Exam date updated', 'success');
+}
+
+function updateLevel() {
+  db.level = document.getElementById('settingsLevel').value;
+  saveData();
+  updateSidebar();
+  toast('Study level updated', 'success');
+}
+
+function updateAvatar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    db.avatar = e.target.result;
+    saveData();
+    updateSidebar();
+    updateSettingsPanel();
+    toast('Profile photo updated', 'success');
+  };
+  reader.readAsDataURL(file);
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `academind-${Date.now()}.json`;
+  a.click();
+  toast('Data exported', 'success');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.subjects) {
+        db = data;
+        saveData();
+        initializeApp();
+        toast('Data imported successfully', 'success');
+      } else {
+        toast('Invalid file format', 'error');
+      }
+    } catch {
+      toast('Failed to import data', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetAll() {
+  if (!confirm('⚠️ This will delete ALL your data. Are you sure?')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+function refreshData() {
+  updateDashboard();
+  updateSubjectsPanel();
+  updateAnalytics();
+  toast('Data refreshed', 'success');
+}
+
+// ==================== TEST HISTORY PANEL ====================
+function renderHistoryPanel() {
+  // Populate subject filter
+  const subjectFilter = document.getElementById('historySubjectFilter');
+  const currentSubjectVal = subjectFilter.value;
+  subjectFilter.innerHTML = '<option value="">All Subjects</option>';
+  db.subjects.forEach(s => {
+    subjectFilter.innerHTML += `<option value="${s.id}" ${currentSubjectVal == s.id ? 'selected' : ''}>${s.name}</option>`;
+  });
+
+  // Collect all tests
+  let allTests = [];
+  db.subjects.forEach(subject => {
+    subject.tests.forEach(test => {
+      allTests.push({
+        ...test,
+        subjectName: subject.name,
+        subjectId: subject.id,
+        subjectColor: subject.color,
+        pct: parseFloat((test.marks / test.total * 100).toFixed(1))
+      });
+    });
+  });
+
+  // Apply filters
+  const subjectVal = document.getElementById('historySubjectFilter').value;
+  const gradeVal = document.getElementById('historyGradeFilter').value;
+  const sortVal = document.getElementById('historySortBy').value;
+
+  if (subjectVal) allTests = allTests.filter(t => t.subjectId == subjectVal);
+  if (gradeVal) allTests = allTests.filter(t => getGradeInfo(t.pct).grade === gradeVal);
+
+  // Sort
+  allTests.sort((a, b) => {
+    if (sortVal === 'date-desc') return new Date(b.date) - new Date(a.date);
+    if (sortVal === 'date-asc') return new Date(a.date) - new Date(b.date);
+    if (sortVal === 'score-desc') return b.pct - a.pct;
+    if (sortVal === 'score-asc') return a.pct - b.pct;
+    return 0;
+  });
+
+  // Render KPIs
+  const kpisEl = document.getElementById('historyKpis');
+  if (allTests.length > 0) {
+    const avg = allTests.reduce((s, t) => s + t.pct, 0) / allTests.length;
+    const best = Math.max(...allTests.map(t => t.pct));
+    const worst = Math.min(...allTests.map(t => t.pct));
+    const passing = allTests.filter(t => t.pct >= 35).length;
+    kpisEl.innerHTML = `
+      <div class="kpi-item">
+        <div class="kpi-label">📋 Total Tests</div>
+        <div class="kpi-value">${allTests.length}</div>
+        <div class="kpi-trend">across ${db.subjects.length} subject${db.subjects.length !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">📊 Average Score</div>
+        <div class="kpi-value" style="color:${getGradeInfo(avg).color}">${avg.toFixed(1)}%</div>
+        <div class="kpi-trend">Grade ${getGradeInfo(avg).grade}</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">🏆 Best Score</div>
+        <div class="kpi-value" style="color:var(--success)">${best.toFixed(1)}%</div>
+        <div class="kpi-trend">Personal best</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">✅ Pass Rate</div>
+        <div class="kpi-value">${Math.round(passing / allTests.length * 100)}%</div>
+        <div class="kpi-trend">${passing} / ${allTests.length} passed</div>
+      </div>
+    `;
+    kpisEl.style.display = 'grid';
+  } else {
+    kpisEl.style.display = 'none';
+  }
+
+  const wrapper = document.getElementById('historyTableWrapper');
+  const emptyEl = document.getElementById('historyEmpty');
+
+  if (!allTests.length) {
+    wrapper.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+
+  let rows = allTests.map(test => {
+    const grade = getGradeInfo(test.pct);
+    const barColor = grade.color;
+    return `
+      <tr>
+        <td style="color: var(--text-dim); font-size: 12px;">${test.date}</td>
+        <td><span style="color: ${test.subjectColor}; font-weight: 600;">${test.subjectName}</span></td>
+        <td>${test.name}</td>
+        <td style="font-family: 'Space Grotesk', monospace;">${test.marks}/${test.total}</td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="flex: 1; height: 4px; background: var(--surface-hover); border-radius: 2px; min-width: 60px;">
+              <div style="height: 100%; width: ${test.pct}%; background: ${barColor}; border-radius: 2px; transition: width 0.3s;"></div>
+            </div>
+            <span style="font-weight: 600; min-width: 42px; text-align: right;">${test.pct}%</span>
+          </div>
+        </td>
+        <td><span class="grade-badge ${grade.class}">${grade.grade}</span></td>
+        <td>
+          <div style="display: flex; gap: 6px;">
+            <button class="edit-btn" onclick="openEditModal(${test.id}, ${test.subjectId})">✎ Edit</button>
+            <button class="delete-btn" onclick="deleteTest(${test.id}, ${test.subjectId})">🗑</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  wrapper.innerHTML = `
+    <div class="table-wrapper" style="margin-top: 0; border: none;">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Subject</th>
+            <th>Test</th>
+            <th>Score</th>
+            <th>% (Progress)</th>
+            <th>Grade</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="padding: 14px 16px; font-size: 12px; color: var(--text-dim); border-top: 1px solid var(--border);">
+      Showing ${allTests.length} test${allTests.length !== 1 ? 's' : ''}
+    </div>
+  `;
+}
+
+function exportHistoryCSV() {
+  let allTests = [];
+  db.subjects.forEach(subject => {
+    subject.tests.forEach(test => {
+      const pct = (test.marks / test.total * 100).toFixed(1);
+      allTests.push({
+        Date: test.date,
+        Subject: subject.name,
+        Test: test.name,
+        Marks: test.marks,
+        Total: test.total,
+        Percentage: pct + '%',
+        Grade: getGradeInfo(parseFloat(pct)).grade
+      });
+    });
+  });
+
+  if (!allTests.length) { toast('No data to export', 'warning'); return; }
+
+  const headers = Object.keys(allTests[0]);
+  const csv = [headers.join(','), ...allTests.map(r => headers.map(h => `"${r[h]}"`).join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `test-history-${Date.now()}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported!', 'success');
+}
+
+// ==================== THEME ====================
+function toggleTheme() {
+  const isLight = document.documentElement.classList.toggle('light');
+  db.theme = isLight ? 'light' : 'dark';
+  saveData();
+  updateThemeIcon();
+  updateDashboard();
+}
+
+function applyTheme() {
+  const isLight = db.theme === 'light';
+  document.documentElement.classList.toggle('light', isLight);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const isLight = document.documentElement.classList.contains('light');
+  const thumb = document.getElementById('themeThumb');
+  if (thumb) thumb.textContent = isLight ? '🌙' : '☀️';
+}
+
+// ==================== MEMORY: PAUSE ANIMATIONS WHEN TAB HIDDEN ====================
+document.addEventListener('visibilitychange', () => {
+  document.body.classList.toggle('anim-paused', document.hidden);
+});
+
+// ==================== UTILITIES ====================
+function switchPanel(panelId, element) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel' + panelId.charAt(0).toUpperCase() + panelId.slice(1)).classList.add('active');
+  
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  if (element) element.classList.add('active');
+
+  const titles = {
+    home: { category: 'Overview', title: 'Dashboard' },
+    subjects: { category: 'Academics', title: 'Subjects & Tests' },
+    analytics: { category: 'Academics', title: 'Analytics' },
+    ai: { category: 'AI Tools', title: 'AI Tutor' },
+    history: { category: 'Academics', title: 'Test History' },
+    settings: { category: 'Account', title: 'Settings' }
+  };
+
+  document.getElementById('pageCategory').textContent = titles[panelId]?.category || '';
+  document.getElementById('pageTitle').textContent = titles[panelId]?.title || '';
+
+  if (panelId === 'analytics') updateAnalytics();
+  if (panelId === 'home') updateDashboard();
+  if (panelId === 'history') renderHistoryPanel();
+
+  // Sync bottom nav
+  updateBottomNav(panelId);
+  // Scroll to top on panel change
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateBottomNav(panelId) {
+  document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('active'));
+  const active = document.getElementById('bnav-' + panelId);
+  if (active) active.classList.add('active');
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isOpen = sidebar.classList.toggle('open');
+  overlay.classList.toggle('active', isOpen);
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('active');
+}
+
+function toast(message, type = 'info') {
+  const toastEl = document.getElementById('toast');
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  toastEl.querySelector('.toast-icon').textContent = icons[type] || 'ℹ️';
+  document.getElementById('toastMsg').textContent = message;
+  toastEl.className = `show toast-${type}`;
+  
+  clearTimeout(toastEl._timer);
+  toastEl._timer = setTimeout(() => {
+    toastEl.className = `toast-${type}`;
+  }, 3000);
+}
+
+// ==================== INITIALIZATION ====================
+loadData();
+applyTheme();
+
+if (db.user) {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  initializeApp();
+} else {
+  document.getElementById('setupScreen').style.display = 'flex';
+}
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.warn('SW failed:', err));
+  });
+}
+// Capacitor back button handling
+document.addEventListener('ionBackButton', () => {
+  const activePanel = document.querySelector('.panel.active');
+  if (activePanel && activePanel.id !== 'panelHome') {
+    switchPanel('home', document.querySelector('.nav-item'));
+  }
+});
+</script>
+
+</body>
+</html>

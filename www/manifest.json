@@ -1,0 +1,26 @@
+{
+  "name": "AcadeMind - AI Study Dashboard",
+  "short_name": "AcadeMind",
+  "description": "AI-powered academic study tracker and tutor",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0c12",
+  "theme_color": "#6e56cf",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en"
+}
